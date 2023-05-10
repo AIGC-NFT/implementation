@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.18;
 
-import "./IERC0000.sol";
+import "./IERC7007.sol";
 
 /**
- * @title ERC0000 Token Standard, optional enumeration extension
+ * @title ERC7007 Token Standard, optional enumeration extension
  */
-interface IERC0000Enumerable is IERC0000 {
+interface IERC7007Enumerable is IERC7007 {
     /**
      * @dev Returns the token ID given `prompt`.
      */

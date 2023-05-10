@@ -1,6 +1,6 @@
-# ERC-0000 Reference Implementation
+# ERC-7007 Reference Implementation
 
-This is a WIP implementation of ERC-0000 based on the discussions in the [EIP-0000 issue thread](https://github.com/ethereum/EIPs/issues/0000).
+This is a WIP implementation of ERC-7007 based on the discussions in the [EIP-7007 issue thread](https://github.com/ethereum/EIPs/issues/7007).
 
 ## Setup
 Run `npm install` in the root directory.

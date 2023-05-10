@@ -3,13 +3,13 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "./IERC0000.sol";
+import "./IERC7007.sol";
 import "./IVerifier.sol";
 
 /**
- * @dev Implementation of the {IERC0000} interface.
+ * @dev Implementation of the {IERC7007} interface.
  */
-contract ERC0000 is ERC165, IERC0000, ERC721URIStorage {
+contract ERC7007 is ERC165, IERC7007, ERC721URIStorage {
     address public immutable verifier;
 
     /**
@@ -24,7 +24,7 @@ contract ERC0000 is ERC165, IERC0000, ERC721URIStorage {
     }
 
     /**
-     * @dev See {IERC0000-mint}.
+     * @dev See {IERC7007-mint}.
      */
     function mint(
         bytes calldata prompt,
@@ -32,7 +32,7 @@ contract ERC0000 is ERC165, IERC0000, ERC721URIStorage {
         string calldata uri,
         bytes calldata proof
     ) public virtual override returns (uint256 tokenId) {
-        require(verify(prompt, aigcData, proof), "ERC0000: invalid proof");
+        require(verify(prompt, aigcData, proof), "ERC7007: invalid proof");
         tokenId = uint256(keccak256(prompt));
         _safeMint(msg.sender, tokenId);
         string memory tokenUri = string(
@@ -51,7 +51,7 @@ contract ERC0000 is ERC165, IERC0000, ERC721URIStorage {
     }
 
     /**
-     * @dev See {IERC0000-verify}.
+     * @dev See {IERC7007-verify}.
      */
     function verify(
         bytes calldata prompt,
