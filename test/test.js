@@ -76,7 +76,7 @@ describe("ERC7007Enumerable.sol", function () {
         await erc7007Enumerable.mint(prompt, aigcData, uri, validProof);
         return erc7007Enumerable;
     }
-    
+
     it("should return token id by prompt", async function () {
         const erc7007Enumerable = await deployERC7007EnumerableFixture();
         expect(await erc7007Enumerable.tokenId(prompt)).to.equal(tokenId);
@@ -87,4 +87,37 @@ describe("ERC7007Enumerable.sol", function () {
         expect(await erc7007Enumerable.prompt(tokenId)).to.equal("test");
     });
 
+});
+
+describe("ERC7007Claimable.sol", function () {
+
+    async function deployERC7007ClaimableFixture() {
+        const verifier = await deployVerifierFixture();
+
+        const ERC7007Claimable = await ethers.getContractFactory("MockERC7007Claimable");
+        const erc7007Claimable = await ERC7007Claimable.deploy("testing", "TEST", verifier.address);
+        await erc7007Claimable.deployed();
+        return erc7007Claimable;
+    }
+
+    it("should claim a token by prompt", async function () {
+        const erc7007Claimable = await deployERC7007ClaimableFixture();
+        const [owner] = await ethers.getSigners();
+        await erc7007Claimable.claim(prompt);
+        expect(await erc7007Claimable.promptOwner(prompt)).to.equal(owner.address);
+    });
+
+    it("should not claim a token by prompt twice", async function () {
+        const erc7007Claimable = await deployERC7007ClaimableFixture();
+        await erc7007Claimable.claim(prompt);
+        await expect(erc7007Claimable.claim(prompt)).to.be.revertedWith("ERC7007Claimable: prompt already claimed");
+    });
+
+    it("should mint a token to prompt owner even called by another address", async function () {
+        const erc7007Claimable = await deployERC7007ClaimableFixture();
+        const [owner, other] = await ethers.getSigners();
+        await erc7007Claimable.claim(prompt);
+        await erc7007Claimable.connect(other).mint(prompt, aigcData, uri, validProof);
+        expect(await erc7007Claimable.balanceOf(owner.address)).to.equal(1);
+    });
 });
