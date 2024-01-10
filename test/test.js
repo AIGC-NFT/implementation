@@ -19,12 +19,12 @@ const validProof = ethers.utils.toUtf8Bytes("valid");
 const invalidProof = ethers.utils.toUtf8Bytes("invalid");
 const tokenId = BigNumber.from("70622639689279718371527342103894932928233838121221666359043189029713682937432");
 
-describe("ERC7007zkML.sol", function () {
+describe("ERC7007Zkml.sol", function () {
 
     async function deployERC7007Fixture() {
         const verifier = await deployVerifierFixture();
 
-        const ERC7007 = await ethers.getContractFactory("ERC7007zkML");
+        const ERC7007 = await ethers.getContractFactory("ERC7007Zkml");
         const erc7007 = await ERC7007.deploy("testing", "TEST", verifier.address);
         await erc7007.deployed();
         return erc7007;
