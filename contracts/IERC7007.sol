@@ -12,9 +12,10 @@ interface IERC7007 is IERC165, IERC721 {
      * @dev Emitted when `tokenId` token is minted.
      */
     event Mint(
+        address indexed to,
         uint256 indexed tokenId,
         bytes indexed prompt,
-        bytes indexed aigcData,
+        bytes aigcData,
         string uri,
         bytes proof
     );
@@ -30,6 +31,7 @@ interface IERC7007 is IERC165, IERC721 {
      * - `proof` should not include `aigcData` to save gas.
      */
     function mint(
+        address to,
         bytes calldata prompt,
         bytes calldata aigcData,
         string calldata uri,

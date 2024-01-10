@@ -19,12 +19,12 @@ const validProof = ethers.utils.toUtf8Bytes("valid");
 const invalidProof = ethers.utils.toUtf8Bytes("invalid");
 const tokenId = BigNumber.from("70622639689279718371527342103894932928233838121221666359043189029713682937432");
 
-describe("ERC7007.sol", function () {
+describe("ERC7007zkML.sol", function () {
 
     async function deployERC7007Fixture() {
         const verifier = await deployVerifierFixture();
 
-        const ERC7007 = await ethers.getContractFactory("ERC7007");
+        const ERC7007 = await ethers.getContractFactory("ERC7007zkML");
         const erc7007 = await ERC7007.deploy("testing", "TEST", verifier.address);
         await erc7007.deployed();
         return erc7007;
@@ -34,24 +34,27 @@ describe("ERC7007.sol", function () {
         it("should mint a token", async function () {
             const erc7007 = await deployERC7007Fixture();
             const [owner] = await ethers.getSigners();
-            await erc7007.mint(prompt, aigcData, uri, validProof);
+            await erc7007.mint(owner.address, prompt, aigcData, uri, validProof);
             expect(await erc7007.balanceOf(owner.address)).to.equal(1);
         });
 
         it("should not mint a token with invalid proof", async function () {
             const erc7007 = await deployERC7007Fixture();
-            await expect(erc7007.mint(prompt, aigcData, uri, invalidProof)).to.be.revertedWith("ERC7007: invalid proof");
+            const [owner] = await ethers.getSigners();
+            await expect(erc7007.mint(owner.address, prompt, aigcData, uri, invalidProof)).to.be.revertedWith("ERC7007: invalid proof");
         });
 
         it("should not mint a token with same data twice", async function () {
             const erc7007 = await deployERC7007Fixture();
-            await erc7007.mint(prompt, aigcData, uri, validProof);
-            await expect(erc7007.mint(prompt, aigcData, uri, validProof)).to.be.revertedWith("ERC721: token already minted");
+            const [owner] = await ethers.getSigners();
+            await erc7007.mint(owner.address, prompt, aigcData, uri, validProof);
+            await expect(erc7007.mint(owner.address, prompt, aigcData, uri, validProof)).to.be.revertedWith("ERC721: token already minted");
         });
 
         it("should emit a Mint event", async function () {
             const erc7007 = await deployERC7007Fixture();
-            await expect(erc7007.mint(prompt, aigcData, uri, validProof))
+            const [owner] = await ethers.getSigners();
+            await expect(erc7007.mint(owner.address, prompt, aigcData, uri, validProof))
                 .to.emit(erc7007, "Mint")
         });
     });
@@ -59,7 +62,8 @@ describe("ERC7007.sol", function () {
     describe("metadata", function () {
         it("should return token metadata", async function () {
             const erc7007 = await deployERC7007Fixture();
-            await erc7007.mint(prompt, aigcData, uri, validProof);
+            const [owner] = await ethers.getSigners();
+            await erc7007.mint(owner.address, prompt, aigcData, uri, validProof);
             expect(await erc7007.tokenURI(tokenId)).to.equal('{"name": "test", "description": "test", "image": "test", "aigc_type": "test", "prompt": "test", "aigc_data": "test"}');
         });
     });
@@ -69,11 +73,13 @@ describe("ERC7007Enumerable.sol", function () {
 
     async function deployERC7007EnumerableFixture() {
         const verifier = await deployVerifierFixture();
+        const [owner] = await ethers.getSigners();
 
         const ERC7007Enumerable = await ethers.getContractFactory("MockERC7007Enumerable");
         const erc7007Enumerable = await ERC7007Enumerable.deploy("testing", "TEST", verifier.address);
         await erc7007Enumerable.deployed();
-        await erc7007Enumerable.mint(prompt, aigcData, uri, validProof);
+        
+        await erc7007Enumerable.mint(owner.address, prompt, aigcData, uri, validProof);
         return erc7007Enumerable;
     }
     
