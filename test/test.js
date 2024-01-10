@@ -94,3 +94,61 @@ describe("ERC7007Enumerable.sol", function () {
     });
 
 });
+
+async function deployOpmlLibFixture() {
+    const OpmlLib = await ethers.getContractFactory("MockOpmlLib");
+    const opmlLib = await OpmlLib.deploy();
+    await opmlLib.deployed();
+    return opmlLib;
+}
+
+describe("ERC7007Opml.sol", function () {
+
+    async function deployERC7007Fixture() {
+        const opmlLib = await deployOpmlLibFixture();
+
+        const ERC7007 = await ethers.getContractFactory("ERC7007Opml");
+        const erc7007 = await ERC7007.deploy("testing", "TEST", opmlLib.address);
+        await erc7007.deployed();
+        return erc7007;
+    }
+
+    describe("mint", function () {
+        it("should mint a token", async function () {
+            const erc7007 = await deployERC7007Fixture();
+            const [owner] = await ethers.getSigners();
+            await erc7007.mint(owner.address, prompt, aigcData, uri, 0x00);
+            expect(await erc7007.balanceOf(owner.address)).to.equal(1);
+        });
+
+        it("should verify a fianlized request", async function () {
+            const erc7007 = await deployERC7007Fixture();
+            const [owner] = await ethers.getSigners();
+            await erc7007.mint(owner.address, prompt, aigcData, uri, 0x00);
+            expect(await erc7007.verify(prompt, aigcData, 0x00)).to.equal(true);
+        });
+
+        it("should not mint a token with same data twice", async function () {
+            const erc7007 = await deployERC7007Fixture();
+            const [owner] = await ethers.getSigners();
+            await erc7007.mint(owner.address, prompt, aigcData, uri, 0x00);
+            await expect(erc7007.mint(owner.address, prompt, aigcData, uri, 0x00)).to.be.revertedWith("ERC721: token already minted");
+        });
+
+        it("should emit a Mint event", async function () {
+            const erc7007 = await deployERC7007Fixture();
+            const [owner] = await ethers.getSigners();
+            await expect(erc7007.mint(owner.address, prompt, aigcData, uri, validProof))
+                .to.emit(erc7007, "Mint")
+        });
+    });
+
+    describe("metadata", function () {
+        it("should return token metadata", async function () {
+            const erc7007 = await deployERC7007Fixture();
+            const [owner] = await ethers.getSigners();
+            await erc7007.mint(owner.address, prompt, aigcData, uri, validProof);
+            expect(await erc7007.tokenURI(tokenId)).to.equal('{"name": "test", "description": "test", "image": "test", "aigc_type": "test", "prompt": "test", "aigc_data": "test"}');
+        });
+    });
+});
