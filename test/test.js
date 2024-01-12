@@ -9,7 +9,7 @@ async function deployVerifierFixture() {
 }
 const prompt = ethers.utils.toUtf8Bytes("test");
 const aigcData = ethers.utils.toUtf8Bytes("test");
-const uri = '"name": "test", "description": "test", "image": "test", "aigc_type": "test"';
+const uri = '"name": "test", "description": "test", "image": "test", "aigc_type": "test", "proof_type": "test"';
 const validProof = ethers.utils.toUtf8Bytes("valid");
 const invalidProof = ethers.utils.toUtf8Bytes("invalid");
 const tokenId = BigNumber.from("70622639689279718371527342103894932928233838121221666359043189029713682937432");
@@ -59,7 +59,7 @@ describe("ERC7007Zkml.sol", function () {
             const erc7007 = await deployERC7007Fixture();
             const [owner] = await ethers.getSigners();
             await erc7007.mint(owner.address, prompt, aigcData, uri, validProof);
-            expect(await erc7007.tokenURI(tokenId)).to.equal('{"name": "test", "description": "test", "image": "test", "aigc_type": "test", "prompt": "test", "aigc_data": "test"}');
+            expect(await erc7007.tokenURI(tokenId)).to.equal('{"name": "test", "description": "test", "image": "test", "aigc_type": "test", "proof_type": "test", "prompt": "test", "aigc_data": "test"}');
         });
     });
 });
@@ -143,7 +143,7 @@ describe("ERC7007Opml.sol", function () {
             const erc7007 = await deployERC7007Fixture();
             const [owner] = await ethers.getSigners();
             await erc7007.mint(owner.address, prompt, aigcData, uri, validProof);
-            expect(await erc7007.tokenURI(tokenId)).to.equal('{"name": "test", "description": "test", "image": "test", "aigc_type": "test", "prompt": "test", "aigc_data": "test"}');
+            expect(await erc7007.tokenURI(tokenId)).to.equal('{"name": "test", "description": "test", "image": "test", "aigc_type": "test", "proof_type": "test", "prompt": "test", "aigc_data": "test"}');
         });
     });
 });

@@ -3,13 +3,13 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "./IERC7007.sol";
+import "./IERC7007Updatable.sol";
 import "./IOpmlLib.sol";
 
 /**
  * @dev Implementation of the {IERC7007} interface.
  */
-contract ERC7007Opml is ERC165, IERC7007, ERC721URIStorage {
+contract ERC7007Opml is ERC165, IERC7007Updatable, ERC721URIStorage {
     address public immutable opmlLib;
     mapping (uint256 => uint256) public tokenIdToRequestId;
 
@@ -65,9 +65,36 @@ contract ERC7007Opml is ERC165, IERC7007, ERC721URIStorage {
     ) public view virtual override returns (bool success) {
         uint256 tokenId = uint256(keccak256(prompt));
         bytes memory output = IOpmlLib(opmlLib).getOutput(tokenIdToRequestId[tokenId]);
-        
-        // ? : should we update the aigcData if output != keccak256(aigcData) ?
+
         return IOpmlLib(opmlLib).isFinalized(tokenIdToRequestId[tokenId]) && (keccak256(output) == keccak256(aigcData));
+    }
+
+    /**
+     * @dev See {IERC7007Updatable-update}.
+     */
+    function update(
+        bytes calldata prompt,
+        bytes calldata aigcData,
+        string calldata uri
+    ) public virtual override {
+        uint256 tokenId = uint256(keccak256(prompt));
+        require(IOpmlLib(opmlLib).isFinalized(tokenIdToRequestId[tokenId]), "ERC7007: token is not finalized");
+        bytes memory output = IOpmlLib(opmlLib).getOutput(tokenIdToRequestId[tokenId]);
+        require(keccak256(output) == keccak256(aigcData), "ERC7007: invalid aigcData");
+        string memory tokenUri = string(
+            abi.encodePacked(
+                "{",
+                uri,
+                ', "prompt": "',
+                string(prompt),
+                '", "aigc_data": "',
+                string(aigcData),
+                '"}'
+            )
+        );
+        require(keccak256(bytes(tokenUri)) != keccak256(bytes(tokenURI(tokenId))), "ERC7007: token uri is not changed");
+
+        emit Update(tokenId, prompt, aigcData, uri);
     }
 
     /**
