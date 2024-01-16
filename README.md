@@ -33,7 +33,6 @@ REPORT_GAS=true npx hardhat test
             "type": "string",
             "description": "A URI pointing to a resource with mime type image/* representing the asset to which this NFT represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
         },
-
         "prompt": {
             "type": "string",
             "description": "Identifies the prompt from which this AIGC NFT generated"
@@ -49,6 +48,10 @@ REPORT_GAS=true npx hardhat test
         "aigc_data": {
             "type": "string",
             "description": "A URI pointing to a resource with mime type image/* representing the asset to which this AIGC NFT represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
+        },
+        "proof_type": {
+            "type": "string",
+            "description": "validity (zkML) or fraud (opML)"
         }
     }
 }
