@@ -81,25 +81,12 @@ contract ERC7007Opml is ERC165, IERC7007Updatable, ERC721URIStorage {
      */
     function update(
         bytes calldata prompt,
-        bytes calldata aigcData,
-        string calldata uri
+        bytes calldata aigcData
     ) public virtual override {
         require(verify(prompt, aigcData, prompt), "ERC7007: invalid aigcData"); // proof argument is not used in verify() function for opML, so we can pass prompt as proof
         uint256 tokenId = uint256(keccak256(prompt));
-        string memory tokenUri = string(
-            abi.encodePacked(
-                "{",
-                uri,
-                ', "prompt": "',
-                string(prompt),
-                '", "aigc_data": "',
-                string(aigcData),
-                '"}'
-            )
-        );
-        require(keccak256(bytes(tokenUri)) != keccak256(bytes(tokenURI(tokenId))), "ERC7007: token uri is not changed");
-
-        emit Update(tokenId, prompt, aigcData, uri);
+        // TODO: should update tokenURI with new aigcData
+        emit Update(tokenId, prompt, aigcData);
     }
 
     /**
