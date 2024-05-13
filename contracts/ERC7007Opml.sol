@@ -23,17 +23,14 @@ contract ERC7007Opml is ERC165, IERC7007Updatable, ERC721URIStorage {
     ) ERC721(name_, symbol_) {
         opmlLib = opmlLib_;
     }
-
-    /**
-     * @dev See {IERC7007-mint}.
-     */
+    
     function mint(
         address to,
         bytes calldata prompt,
         bytes calldata aigcData,
         string calldata uri,
         bytes calldata proof
-    ) public virtual override returns (uint256 tokenId) {
+    ) public returns (uint256 tokenId) {
         tokenId = uint256(keccak256(prompt));
         _safeMint(to, tokenId);
         string memory tokenUri = string(
@@ -48,11 +45,21 @@ contract ERC7007Opml is ERC165, IERC7007Updatable, ERC721URIStorage {
             )
         );
         _setTokenURI(tokenId, tokenUri);
-        
+        addAigcData(tokenId, prompt, aigcData, proof);
+    }
+
+    /**
+     * @dev See {IERC7007-addAigcData}.
+     */
+    function addAigcData(
+        uint256 tokenId,
+        bytes calldata prompt,
+        bytes calldata aigcData,
+        bytes calldata proof
+    ) public virtual override {
         tokenIdToRequestId[tokenId] = IOpmlLib(opmlLib).initOpmlRequest(prompt);
         IOpmlLib(opmlLib).uploadResult(tokenIdToRequestId[tokenId], aigcData);
-
-        emit Mint(to, tokenId, prompt, aigcData, uri, proof);
+        emit AigcData(tokenId, prompt, aigcData, proof);
     }
 
     /**
