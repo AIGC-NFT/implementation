@@ -57,6 +57,8 @@ contract ERC7007Opml is ERC165, IERC7007Updatable, ERC721URIStorage {
         bytes calldata aigcData,
         bytes calldata proof
     ) public virtual override {
+        require(ownerOf(tokenId) != address(0), "ERC7007: nonexistent token");
+        require(tokenIdToRequestId[tokenId] == 0, "ERC7007: requestId already exists");
         tokenIdToRequestId[tokenId] = IOpmlLib(opmlLib).initOpmlRequest(prompt);
         IOpmlLib(opmlLib).uploadResult(tokenIdToRequestId[tokenId], aigcData);
         emit AigcData(tokenId, prompt, aigcData, proof);
@@ -85,6 +87,7 @@ contract ERC7007Opml is ERC165, IERC7007Updatable, ERC721URIStorage {
     ) public virtual override {
         require(verify(prompt, aigcData, prompt), "ERC7007: invalid aigcData"); // proof argument is not used in verify() function for opML, so we can pass prompt as proof
         uint256 tokenId = uint256(keccak256(prompt));
+        require(ownerOf(tokenId) != address(0), "ERC7007: nonexistent token");
         // TODO: should update tokenURI with new aigcData
         emit Update(tokenId, prompt, aigcData);
     }

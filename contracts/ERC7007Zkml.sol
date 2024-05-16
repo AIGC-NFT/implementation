@@ -57,6 +57,7 @@ contract ERC7007Zkml is ERC165, IERC7007, ERC721URIStorage {
         bytes calldata aigcData,
         bytes calldata proof
     ) public virtual override {
+        require(ownerOf(tokenId) != address(0), "ERC7007: nonexistent token");
         require(verify(prompt, aigcData, proof), "ERC7007: invalid proof");
         emit AigcData(tokenId, prompt, aigcData, proof);
     }
